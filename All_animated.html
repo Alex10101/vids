@@ -1,0 +1,306 @@
+<link rel="stylesheet" href="style.css">
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .tool_window {
+    top: 150px;
+  }
+
+  .app {
+    overflow: hidden;
+  }
+
+  .container > * {
+    margin: 60px auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  button.red {
+    background-color: lightgray;
+    box-shadow: 0px 0px 8px 5px white;
+  }
+
+  div.active {
+    display: block;
+  }
+
+  .indicators-button {
+    width: 30px;
+    height: 30px;
+    margin: 10px 7px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+  }
+
+  .indicators-button:focus {
+    outline: 0;
+  }
+
+  #indicators-slider {
+    width: 160px;
+    height: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #indicators_next {
+    box-shadow: -2px 0px 6px white;
+    border: none;
+    margin-left: -20px;
+    z-index: 1;
+  }
+
+  #indicators_prev {
+    transition: margin-left 0.5s;
+    box-shadow: 1px 0px 6px white;
+    border: none;
+    margin-left: 12px;
+  }
+
+  #indicators_prev.inactive {
+    margin-left: 52px;
+  }
+
+  div.slider {
+    transition: left 0.1s;
+    position: absolute;
+    top: 0;
+    left: 150px;
+    width: 500px;
+  }
+
+  div.active {
+    display: flex;
+    left: 0;
+  }
+
+  .prev-container {
+    width: 30px;
+    height: 30px;
+    margin: 0 10px;
+  }
+  
+  .content {
+    display: block;
+    margin: auto;
+    height: 450px;
+  }
+  
+  #vids {
+    width: 1200px;
+    height: 450px;
+    position: relative;
+    margin: auto;
+    transition: width 0.7s;
+  }
+  
+  #vids.two_blocks {
+    width: 800px;
+  }
+
+  #vids.one_block {
+    width: 400px;
+  }
+  
+  #vids > .slider {
+    display: flex;
+    /*transition: top 0.5s;*/
+    transition: opacity 0.7s;
+    width: 100%;
+    opacity: 0;
+    /*top: 500px;*/
+    top: 0;
+    left: 0;
+  }
+  
+  #vids > .active {
+    /*top: 0;*/
+    opacity: 1;
+    z-index: 1;
+  }
+  
+  #indicators-slider > .slider {
+    margin-left: 5px;
+  }
+  
+  .indicators-container {
+    padding-right: 45px;
+  }
+
+  #vids > .slider  {
+    animation-duration: 0.5s;
+    animation-name: slidein;
+  }
+  
+  div#vids.skip_transition {
+    transition: none;
+  }
+
+  @keyframes slidein {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+
+  @media (max-width: 400px) {
+    div#vids {
+      width: 100% !important; 
+    }
+
+    .vids-container {
+      width: 300px;
+      max-width: 90%;
+      min-width: 0;
+      margin: auto;
+    }
+  }
+  
+</style>
+
+<script src="data.js"></script>
+<script src="util.js"></script>
+<script src="vids.js"></script>
+<script src="buttons.js"></script>
+
+
+<div class="app">
+  <div class="container">
+    <div class="autocomplete">
+      <input id="autocomplete_search" type="text" placeholder="Type Something...">
+    </div>
+
+    <div class="indicators-container">
+      <div class="prev-container">
+        <button class="indicators-button inactive" id="indicators_prev"> < </button>
+      </div>
+      <div id="indicators-slider"></div>
+      <button class="indicators-button" id="indicators_next"> > </button>
+    </div>
+
+    <div class="content">
+      <div class="data" id="vids"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="autocomplete.js"></script>
+
+<script>
+  let pages = 3
+  let itemsPerPage = 3
+  let responseMaxResults = 5
+
+  let vidsElement = document.getElementById('vids')
+  
+  function setVidsClass() {
+    let initClasses = {
+      '1': 'one_block',
+      '2': 'two_blocks',
+      '3': '',
+    }
+
+    window.innerWidth < 1200 && (itemsPerPage = 2)
+    window.innerWidth < 800  && (itemsPerPage = 1)
+
+    vidsElement.className = initClasses[itemsPerPage] + ' skip_transition'
+    setTimeout(() => vidsElement.className = initClasses[itemsPerPage], 0)
+  }
+  
+  setAutocomplete(document.getElementById("autocomplete_search"));
+  setVidsClass()
+
+  init()
+  function init() {
+    let indicatorsContainer = document.getElementsByClassName('indicators-container')[0]
+    let indicatorsSlider = document.getElementById('indicators-slider')
+    nextData(itemsPerPage)
+
+    let vids = vidsConstructor(data)
+    let buttons = buttonsConstructor([data])
+    
+    function changeSize(num) {
+      buttons.disableLast()
+      indicatorsSlider.innerHtml = ''
+      vidsElement.innerHTML = ''
+      itemsPerPage = num
+      nextData(itemsPerPage)
+      vids = vidsConstructor(data)
+      buttons = buttonsConstructor([data])
+      setVidsClass()
+    }
+    
+    window.onresize = () => {
+      let itemSize = 400
+      let num = Math.floor(window.innerWidth / itemSize)
+
+      let checkSize = 
+        num !== 0 &&
+        itemsPerPage !== num &&
+        num <= pages              
+      
+      if(checkSize) {
+       changeSize(num) 
+      }
+    }
+
+    indicatorsContainer.onclick = (e) => {
+      if(e.target.className.indexOf('indicators-button') > -1) {
+        let symbol = e.target.textContent.trim()
+
+        let config = {
+          '>'  : next,
+          '<'  : prev,
+        }
+
+        config[symbol] ? config[symbol]() : sub(e)
+
+        function repaintAll() {
+          nextData(itemsPerPage)
+          vids.repaint(data)
+          buttons.repaint([data])
+        }
+
+        function sub(e) {
+          buttons.sub(e)
+          vids.sub(e.target.textContent)
+        }
+
+        function next() {
+          if(buttons.next(symbol) === false) {
+            repaintAll()
+            setTimeout(() => {
+              buttons.next()
+              vids.next()
+            }, 10)
+            return
+          }
+          vids.next()
+        }
+
+        function prev() {
+          buttons.disableLast()
+          buttons.prev(symbol)
+          vids.prev()
+        }
+
+      }
+    }
+    
+    // setInterval(() => {
+    //   indicators_next.click()
+    // }, 10)
+  }
+</script>
