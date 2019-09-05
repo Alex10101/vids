@@ -1,10 +1,10 @@
 function buttonsConstructor(data) {
   let indicators_prev = document.getElementById('indicators_prev')
   let indicatorsSlider = document.getElementById('indicators-slider')
-  
+
   let colorSub = subscribeColorConstructor()
   let sliderSub = subscribeSliderConstructor()
-  
+
   colorSub = {
     ...colorSub,
     nextPageArr: [],
@@ -32,14 +32,14 @@ function buttonsConstructor(data) {
       return this.subs.element.previousSibling
     }
   }
-  
-  
+
+
   // Executes colorSub with first created button
   let i = 1; // increment for appendButton
   function appendButton(data, colorize = true) {
     let points = countPointsToSetColor(data, i)
     let pushedToDefaultPageState = false
-    
+
     return function(parent) {
       let config = {
         textContent: i++
@@ -51,7 +51,7 @@ function buttonsConstructor(data) {
         colorSub.sub(button, 'red')
         colorize = false
       }
-      
+
       if(!pushedToDefaultPageState) {
         colorSub.nextPageArr.push(button) // Error. If data = [[1, 2, 3]] it pushes the first created button but works and not works either way
         pushedToDefaultPageState = true
@@ -63,7 +63,7 @@ function buttonsConstructor(data) {
       parent.appendChild(button)
     }
   }
-  
+
 
   function appendData(data) {
     // Sets newly created sliderSub active    
@@ -72,7 +72,7 @@ function buttonsConstructor(data) {
 
   function prev(symbol) {
     prevButton(symbol)
-    
+
     if(!colorSub.subs.prev()) {
       colorSub.prevPageActive()
       sliderSub.subs.prev()
@@ -83,7 +83,7 @@ function buttonsConstructor(data) {
     }
   }
 
-  
+
   let prevActive = false
   const setPrevActive = () => {
     indicators_prev.className = 'indicators-button'
@@ -100,8 +100,8 @@ function buttonsConstructor(data) {
     symbol === '1' && setPrevInactive()
   }
 
-  
-  function next(symbol) { 
+
+  function next(symbol) {
     prevButton(symbol)
 
     const elementsToColorize = () => colorSub.subs.next()
@@ -133,7 +133,7 @@ function buttonsConstructor(data) {
     },
     disableLast() {
       colorSub.disableLast()
-    }, 
+    },
     resize() {
       appendSlider(indicatorsSlider, appendButton(data), data, sliderSub)
     }

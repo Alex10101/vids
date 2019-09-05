@@ -214,6 +214,24 @@ function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
   local_data.forEach((arr, i) => appendToParent(arr.length, i, arr))
 }
 
+
+function fillDots(num) {
+  return joinChunkFromEnd(num.split(''), 3).join('.')
+}
+
+
+function joinChunkFromEnd (arr, len) {
+  let chunks = []
+
+  while (arr.length !== 0) {
+    chunks.push(arr.splice(-len).join(''));
+  }
+
+  return chunks.reverse();
+}
+
+
+
 // [[1, 2, 3], [1, 2, 3]]
 // [[1, 2], [1, 2, 3]] <- pop first
 // [[1, 2], [3, 1, 2, 3]] <- push to next

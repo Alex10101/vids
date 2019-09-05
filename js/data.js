@@ -6,7 +6,7 @@ let nextPageToken = ''
 
 async function getData(value) {
   
-  return JSON.parse(str2).items.map(item => item.snippet.title)
+  return JSON.parse(str2).items
 
   // let data = e.target.value;
   // console.log(data)
@@ -34,9 +34,14 @@ async function getData(value) {
   return arr
 }
 
-
-function nextData(itemsPerPage) {  
+function setNewData(str) {
   data = []
+  nextData()
+  main.setNewData()
+}
+
+
+function nextData(localItemsPerPage = itemsPerPage, page = 0) {
   let arr = []
   
   let stats = JSON.parse(str2).items;
@@ -60,9 +65,13 @@ function nextData(itemsPerPage) {
     addData()
   }
 
-  let res = chunk(arr, itemsPerPage)
+  let res = chunk(arr, localItemsPerPage)
+  arr = res.slice(0, pages)
   
-  data = res.slice(0, pages)    
+  arr.forEach(item => {
+    data.push(item)
+  })
+  
 }
 
 function _getData() {
