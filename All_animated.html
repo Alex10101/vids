@@ -1,147 +1,30 @@
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="animation.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/animation.css">
 
-<script src="data.js"></script>
-<script src="util.js"></script>
-<script src="vids.js"></script>
-<script src="buttons.js"></script>
+<script src="js/data.js"></script>
+<script src="js/util.js"></script>
+<script src="js/content.js"></script>
+<script src="js/buttons.js"></script>
 
+<script defer src="js/autocomplete.js"></script>
+<script defer src="js/keyboard.js"></script>
+<script defer src="js/main.js"></script>
 
 <div class="app">
-  <div class="container">
-    <div class="autocomplete">
-      <input autofocus id="autocomplete_search" type="text" placeholder="Type Something...">
-    </div>
+    <div class="container">
+        <div class="autocomplete">
+            <input autofocus id="autocomplete_search" type="text" placeholder="Type Something...">
+        </div>
 
-    <div class="indicators-container">
-      <div class="prev-container">
-        <button class="indicators-button inactive" id="indicators_prev"> < </button>
-      </div>
-      <div id="indicators-slider"></div>
-      <button class="indicators-button" id="indicators_next"> > </button>
-    </div>
+        <div class="indicators-container">
+            <div class="prev-container">
+                <button class="indicators-button inactive" id="indicators_prev"> <</button>
+            </div>
+            <div id="indicators-sliders"></div>
+            <button class="indicators-button" id="indicators_next"> ></button>
+        </div>
 
-    <div class="content">
-      <div class="data" id="vids"></div>
-    </div>
+        <div id="content"></div>
 
-  </div>
+    </div>
 </div>
-
-
-<script src="autocomplete.js"></script>
-<script src="keyboard.js"></script>
-
-<script>
-  let pages = 3
-  let itemsPerPage = 3
-  let responseMaxResults = 5
-  let main;
-
-  let vidsElement = document.getElementById('vids')
-  
-  function setVidsClass() {
-    let initClasses = {
-      '1': 'one_block',
-      '2': 'two_blocks',
-      '3': '',
-    }
-
-    window.innerWidth < 1200 && (itemsPerPage = 2)
-    window.innerWidth < 800  && (itemsPerPage = 1)
-
-    vidsElement.className = initClasses[itemsPerPage] + ' skip_transition'
-    vidsElement.className = initClasses[itemsPerPage]
-    setTimeout(() => vidsElement.className = initClasses[itemsPerPage], 0)
-  }
-  
-  setAutocomplete(document.getElementById("autocomplete_search"));
-  setVidsClass()
-  
-  main = init()
-  
-  function init() {
-    let page = 1
-    
-    let indicatorsContainer = document.getElementsByClassName('indicators-container')[0]
-    let indicatorsSlider = document.getElementById('indicators-slider')
-    
-    nextData(itemsPerPage)
-    
-    let vids = vidsConstructor(data)
-    let buttons = buttonsConstructor([data.slice((page - 1), (page - 1 + itemsPerPage))])
-    
-    function setNullAndRepaint(num = Math.floor(window.innerWidth / 400)) {
-      buttons.disableLast()
-      indicatorsSlider.innerHTML = ''
-      vidsElement.innerHTML = ''
-      itemsPerPage = num
-      nextData(itemsPerPage)
-      vids = vidsConstructor(data)
-      buttons = buttonsConstructor([data.slice((page - 1), (page - 1 + itemsPerPage))])
-      setVidsClass()
-    }
-    
-    window.onresize = () => {
-      let itemSize = 400
-      let num = Math.floor(window.innerWidth / itemSize)
-
-      let checkSize = 
-        num !== 0 &&
-        itemsPerPage !== num &&
-        num <= pages              
-      
-      if(checkSize) {
-       setNullAndRepaint(num) 
-      }
-    }
-
-    function setNewData() {
-      page = 1
-      buttons.repaint()
-      vids.set(data[page - 1], page)
-    }
-
-    indicatorsContainer.onclick = (e) => {
-      if(e.target.className.indexOf('indicators-button') > -1) {
-        let symbol = e.target.textContent.trim()
-
-        let config = {
-          '>'  : next,
-          '<'  : prev,
-        }
-
-        config[symbol] ? config[symbol]() : sub(e)
-
-        function setNextData() {
-          nextData(itemsPerPage, page)
-          buttons.repaint([data.slice((page - 1), (page - 1 + itemsPerPage))], (page - 1))
-        }
-
-        function sub(e) {
-          page = e.target.textContent
-          buttons.sub(e)
-          vids.set(data[page - 1], page)
-        }
-
-        function next() {
-          page++          
-          if(page === data.length) setNextData()
-          buttons.next()
-          vids.set(data[page - 1], page)
-        }
-
-        function prev() {
-          if(page - 1 < 1) return
-          page--
-          buttons.disableLast()
-          buttons.prev(symbol)
-          vids.set(data[page - 1], page)
-        }
-      }
-    }
-    return {
-      setNewData
-    }
-  }
-</script>

@@ -1,235 +1,237 @@
 function countPointsToSetColor(data, i) {
-  let page = 1
-  let obj = { prev: {} }
+    let page = 1;
+    let obj = {prev: {}};
 
-  data.forEach(item => {
-    i += item.length
-    obj[i] = 1
-    obj.prev[i - 1] = 1
-    page++
-  })
+    data.forEach(item => {
+        i += item.length;
+        obj[i] = 1;
+        obj.prev[i - 1] = 1;
+        page++;
+    });
 
-  obj.i = i
-  obj.page = page
-  return obj
+    obj.i = i;
+    obj.page = page;
+    return obj;
 }
 
-let deferredData = []
+let deferredData = [];
 
 function chunk(array, size) {
-  if(deferredData.length + array.length < size) {
-    deferredData = [...deferredData, ...array]
-    return false
-  }
-
-  let chunks = [];
-
-  if(deferredData.length > size) {
-    let deferredDump = [...deferredData]
-    deferredData = []
-    chunks = chunk(deferredDump, size)
-  }
-
-  if(deferredData.length) {
-    chunks.push(deferredData)
-    deferredData = []
-  }
-
-  for (let i = 0; i < array.length; i++) {
-    const lastChunk = chunks[chunks.length - 1];
-    if (!lastChunk || lastChunk.length === size) {
-      chunks.push([array[i]]);  // insert new chunk
-    } else {
-      lastChunk.push(array[i]); // add to lastChunk
+    if (deferredData.length + array.length < size) {
+        deferredData = [...deferredData, ...array];
+        return false;
     }
-  }
 
-  const findChunk = () => {
-    let page = false
-    let last = size
-    chunks.forEach((item, index) => {
-      let len = item.length
-      if(item.length !== last) {
-        page = index
-      }
-      last = len
-    })
+    let chunks = [];
 
-    return page // first page is 0
-  }
+    if (deferredData.length > size) {
+        let deferredDump = [...deferredData];
+        deferredData = [];
+        chunks = chunk(deferredDump, size);
+    }
 
-  let unequalChunk = findChunk()
-  if(unequalChunk && unequalChunk > -1) {
-    deferredData = chunks.pop()
-  }
+    if (deferredData.length) {
+        chunks.push(deferredData);
+        deferredData = [];
+    }
 
-  return chunks;
+    for (let i = 0; i < array.length; i++) {
+        const lastChunk = chunks[chunks.length - 1];
+        if (!lastChunk || lastChunk.length === size) {
+            chunks.push([array[i]]);  // insert new chunk
+        } else {
+            lastChunk.push(array[i]); // add to lastChunk
+        }
+    }
+
+    const findChunk = () => {
+        let page = false;
+        let last = size;
+        chunks.forEach((item, index) => {
+            let len = item.length;
+            if (item.length !== last) {
+                page = index;
+            }
+            last = len;
+        });
+
+        return page; // first page is 0
+    };
+
+    let unequalChunk = findChunk();
+    if (unequalChunk && unequalChunk > -1) {
+        deferredData = chunks.pop();
+    }
+
+    return chunks;
 }
 
 function createElement(elementName, className, propsObj) {
-  let div = document.createElement(elementName)
-  className && (div.className = className)
-  if(propsObj) {
-    Object.keys(propsObj).forEach((key) => {
-      div[key] = propsObj[key]
-    })
-  }
-  return div
+    let div = document.createElement(elementName);
+    className && (div.className = className);
+    if (propsObj) {
+        Object.keys(propsObj)
+        .forEach((key) => {
+            div[key] = propsObj[key];
+        });
+    }
+    return div;
 }
 
 
-function subscribeColorConstructor() { 
-  let pubSub = {
-    func: false,
+function subscribeColorConstructor() {
+    let pubSub = {
+        func: false,
 
-    sub(func) {
-      this.func = func
-    },
+        sub(func) {
+            this.func = func;
+        },
 
-    once() {
-      if(this.func) {
-        this.func()
-        this.func = false
-      }
+        once() {
+            if (this.func) {
+                this.func();
+                this.func = false;
+            }
+        }
+    };
+
+    let subscribeElement = {
+        element: false,
+        classNameToSet: null,
+
+        set(elem, classNameToSet) {
+            this.element = elem;
+            this.classNameToSet = classNameToSet;
+        },
+
+        next() {
+            if (!this.element || !this.element.nextSibling) {
+                return false;
+            }
+            setClassAndNext(this.element.nextSibling, this.classNameToSet);
+            return true;
+        },
+
+        prev() {
+            if (!this.element || !this.element.previousSibling) {
+                return false;
+            }
+            setClassAndNext(this.element.previousSibling, this.classNameToSet);
+            return true;
+        }
+    };
+
+    function setClassAndNext(elem, className) {
+        pubSub.once();
+        let oldClass = elem.className;
+        elem.className += " " + className;
+        pubSub.sub(() => elem.className = oldClass);
+        subscribeElement.set(elem, className);
     }
-  }
 
-  let subscribeElement = {
-    element: false,
-    classNameToSet: null,
-
-    set(elem, classNameToSet) {
-      this.element = elem
-      this.classNameToSet = classNameToSet
-    },
-
-    next() {
-      if(!this.element || !this.element.nextSibling) {
-        return false
-      }
-      setClassAndNext(this.element.nextSibling, this.classNameToSet)
-      return true
-    },
-
-    prev() {
-      if(!this.element || !this.element.previousSibling) {
-        return false
-      }
-      setClassAndNext(this.element.previousSibling, this.classNameToSet)
-      return true
-    }
-  }
-
-  function setClassAndNext(elem, className) {
-    pubSub.once()
-    let oldClass = elem.className
-    elem.className += ' ' + className
-    pubSub.sub(() => elem.className = oldClass)
-    subscribeElement.set(elem, className)
-  }
-
-  return {
-    sub: setClassAndNext,
-    subs: subscribeElement,
-    disableLast(){
-      pubSub.once()
-    }
-  }
+    return {
+        sub: setClassAndNext,
+        subs: subscribeElement,
+        disableLast() {
+            pubSub.once();
+        }
+    };
 }
 
 
-function subscribeSliderConstructor (className = 'active') {
-  let pubSub = {
-    arr: [],
+function subscribeSliderConstructor(className = "active") {
+    let pubSub = {
+        arr: [],
 
-    sub(func) {
-      this.arr.push(func)
-    },
+        sub(func) {
+            this.arr.push(func);
+        },
 
-    last() {
-      if(this.arr.length) {
-        this.arr.pop()()
-      }
+        last() {
+            if (this.arr.length) {
+                this.arr.pop()();
+            }
+        }
+    };
+
+    let subscribeElement = {
+        element: [],
+        classNameToSet: " " + className,
+
+        set(elem) {
+            this.element.push(elem);
+        },
+
+        next() {
+            let i = this.element.length - 1;
+            if (!this.element.length || !this.element[i].nextSibling) {
+                return false;
+            }
+            setClassAndNext(this.element[i].nextSibling, this.classNameToSet);
+            return true;
+        },
+
+        prev() {
+            let i = this.element.length - 1;
+            if (!this.element.length || !this.element[i].previousSibling) {
+                return false;
+            }
+
+            this.element.pop();
+            pubSub.last();
+            return true;
+        }
+    };
+
+    function setClassAndNext(elem, className) {
+        let oldClass = elem.className;
+        elem.className += " " + className;
+        pubSub.sub(() => elem.className = oldClass);
+        subscribeElement.set(elem, className);
     }
-  }
 
-  let subscribeElement = {
-    element: [],
-    classNameToSet: ' ' + className,
-
-    set(elem) {
-      this.element.push(elem)
-    },
-
-    next() {
-      let i = this.element.length - 1
-      if(!this.element.length || !this.element[i].nextSibling) {
-        return false
-      }
-      setClassAndNext(this.element[i].nextSibling, this.classNameToSet)
-      return true
-    },
-
-    prev() {
-      let i = this.element.length - 1
-      if(!this.element.length || !this.element[i].previousSibling) {
-        return false
-      }
-
-      this.element.pop()
-      pubSub.last()
-      return true
-    }
-  }
-
-  function setClassAndNext(elem, className) {
-    let oldClass = elem.className
-    elem.className += ' ' + className
-    pubSub.sub(() => elem.className = oldClass)
-    subscribeElement.set(elem, className)
-  }
-
-  return {
-    sub: setClassAndNext,
-    subs: subscribeElement
-  }
+    return {
+        sub: setClassAndNext,
+        subs: subscribeElement
+    };
 }
 
 function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
-  let activeSet = false
+    let activeSet = false;
 
-  function appendToParent(num, local_index, local_arr) {
-    let slider = createElement('div', 'slider')
-    for(let i = 0; i < num; i++){
-      appendChilds(slider, i, local_arr)
+    function appendToParent(num, local_index, local_arr) {
+        let slider = createElement("div", "slider");
+        for (let i = 0; i < num; i++) {
+            appendChilds(slider, i, local_arr);
+        }
+
+        if (!activeSet) {
+            setClassAndNext && setClassAndNext.sub(slider, "active");
+            activeSet = true;
+        }
+        parent.appendChild(slider);
     }
 
-    if(!activeSet) {
-      setClassAndNext && setClassAndNext.sub(slider, 'active')
-      activeSet = true
-    }
-    parent.appendChild(slider)
-  }
-
-  local_data.forEach((arr, i) => appendToParent(arr.length, i, arr))
+    local_data.forEach((arr, i) => appendToParent(arr.length, i, arr));
 }
 
 
 function fillDots(num) {
-  return joinChunkFromEnd(num.split(''), 3).join('.')
+    return joinChunkFromEnd(num.split(""), 3)
+    .join(".");
 }
 
 
-function joinChunkFromEnd (arr, len) {
-  let chunks = []
+function joinChunkFromEnd(arr, len) {
+    let chunks = [];
 
-  while (arr.length !== 0) {
-    chunks.push(arr.splice(-len).join(''));
-  }
+    while (arr.length !== 0) {
+        chunks.push(arr.splice(-len)
+        .join(""));
+    }
 
-  return chunks.reverse();
+    return chunks.reverse();
 }
-
 
 
 // [[1, 2, 3], [1, 2, 3]]
@@ -258,42 +260,47 @@ function joinChunkFromEnd (arr, len) {
 
 
 function animate() {
-  let prev = document.getElementById('indicators_prev')
-  let next = document.getElementById('indicators_next')
-  let stop = 4
-  let timer = 200
+    let prev = document.getElementById("indicators_prev");
+    let next = document.getElementById("indicators_next");
+    let stop = 4;
+    let timer = 200;
 
-  function add(i = 0) {
-    function func() {
-      clear(i)
-      next.click()
+    function add(i = 0) {
+        function func() {
+            clear(i);
+            next.click();
 
-      i++
-    }
-    let int = setInterval(func, timer)
-    function clear(i) {
-      if(i === stop) {
-        clearInterval(int)
-        del()
-      }
-    }
-  }
+            i++;
+        }
 
-  function del(i = 0) {
-    function func() {
-      clear(i)
-      prev.click()
-      i++
+        let int = setInterval(func, timer);
+
+        function clear(i) {
+            if (i === stop) {
+                clearInterval(int);
+                del();
+            }
+        }
     }
-    let int = setInterval(func, timer)
-    function clear(i) {
-      if(i === stop) {
-        clearInterval(int)
-        add()
-      }
+
+    function del(i = 0) {
+        function func() {
+            clear(i);
+            prev.click();
+            i++;
+        }
+
+        let int = setInterval(func, timer);
+
+        function clear(i) {
+            if (i === stop) {
+                clearInterval(int);
+                add();
+            }
+        }
     }
-  }
-  add()
+
+    add();
 }
 
 
