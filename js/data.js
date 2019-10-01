@@ -37,7 +37,6 @@ async function getData(value) {
 function setNewData(str) {
     data = [];
     nextData();
-    main.setNewData();
 }
 
 

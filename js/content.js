@@ -1,5 +1,5 @@
-function vidsConstructor(arr) {
-    let vids = document.getElementById("content");
+function contentConstructor(arr) {
+    let content = document.getElementById("content");
     let sliderSub = subscribeColorConstructor();
     let inc = 1;
     let page = 0;
@@ -91,21 +91,19 @@ function vidsConstructor(arr) {
         briefContainer.appendChild(DOMlinks.views);
         container.appendChild(DOMlinks.description);
     }
+    
+    function resize(data) {
+        
+    }
 
-    appendSlider(vids, appendElement, arr.slice(0, 2), sliderSub);
+    appendSlider(content, appendElement, arr.slice(0, 2), sliderSub);
     // console.log(slidersArr)
 
     return {
-        sub(newPage) {
-            // sliderSub.sub(slidersArr[page - 1].parent, 'active')
-            sliders.set(data[newPage - 1]);
-        },
         set(data, newPage) {
             page = newPage;
             sliders.set(data, newPage);
         },
-        resize(data) {
-            appendSlider(vids, appendElement, data, sliderSub);
-        }
+        resize
     };
 }

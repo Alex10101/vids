@@ -1,11 +1,13 @@
+// ToDo: Constants in separate file 
+
 let pages = 3;
 let itemsPerPage = 3;
 let responseMaxResults = 5;
-let main;
 
-let vidsElement = document.getElementById("content");
 
-function setVidsClass() {
+function setContentClass() {
+    let contentElement = document.getElementById("content");
+    
     let initClasses = {
         "1": "one_block",
         "2": "two_blocks",
@@ -15,53 +17,27 @@ function setVidsClass() {
     window.innerWidth < 1200 && (itemsPerPage = 2);
     window.innerWidth < 800 && (itemsPerPage = 1);
 
-    vidsElement.className = initClasses[itemsPerPage] + " skip_transition";
-    vidsElement.className = initClasses[itemsPerPage];
-    setTimeout(() => vidsElement.className = initClasses[itemsPerPage], 0);
+    contentElement.className = initClasses[itemsPerPage] + " skip_transition";
+    setTimeout(() => contentElement.className = initClasses[itemsPerPage], 0);
 }
 
-setAutocomplete(document.getElementById("autocomplete_search"));
-setVidsClass();
 
-main = init();
+setAutocomplete(document.getElementById("autocomplete_search"));
+setContentClass();
+init();
+
 
 function init() {
     let page = 1;
-
     let indicatorsContainer = document.getElementsByClassName("indicators-container")[0];
-    let indicatorsSlider = document.getElementById("indicators-sliders");
 
     nextData(itemsPerPage);
 
-    let vids = vidsConstructor(data);
+    let content = contentConstructor(data);
     let buttons = buttonsConstructor([data.slice((page - 1), (page - 1 + itemsPerPage))]);
 
-    function setNullAndRepaint(num = Math.floor(window.innerWidth / 400)) {
-        buttons.disableLast();
-        indicatorsSlider.innerHTML = "";
-        vidsElement.innerHTML = "";
-        itemsPerPage = num;
-        nextData(itemsPerPage);
-        vids = vidsConstructor(data);
-        buttons = buttonsConstructor([data.slice((page - 1), (page - 1 + itemsPerPage))]);
-        setVidsClass();
-    }
-
-    window.onresize = () => {
-        let itemSize = 400;
-        let num = Math.floor(window.innerWidth / itemSize);
-
-        let checkSize = num !== 0 && itemsPerPage !== num && num <= pages;
-
-        if (checkSize) {
-            setNullAndRepaint(num);
-        }
-    };
-
-    function setNewData() {
-        page = 1;
-        buttons.repaint();
-        vids.set(data[page - 1], page);
+    function setContent() {
+        content.set(data[page - 1], page);
     }
 
     indicatorsContainer.onclick = (e) => {
@@ -75,34 +51,47 @@ function init() {
 
             config[symbol] ? config[symbol]() : sub(e);
 
-            function setNextData() {
-                nextData(itemsPerPage, page);
-                buttons.repaint([data.slice((page - 1), (page - 1 + itemsPerPage))], (page - 1));
-            }
-
             function sub(e) {
+                if(page === e.target.textContent) return
                 page = e.target.textContent;
                 buttons.sub(e);
-                vids.set(data[page - 1], page);
+                setContent()
             }
 
             function next() {
                 page++;
-                if (page === data.length) setNextData();
+                if (page === data.length) {
+                    nextData(itemsPerPage, page);
+                }
                 buttons.next();
-                vids.set(data[page - 1], page);
+                setContent()
             }
 
             function prev() {
                 if (page - 1 < 1) return;
                 page--;
-                buttons.disableLast();
-                buttons.prev(symbol);
-                vids.set(data[page - 1], page);
+                buttons.prev();
+                setContent()
             }
         }
     };
-    return {
-        setNewData
+
+    function resize(num = Math.floor(window.innerWidth / 400)) {
+        itemsPerPage = num
+        let page = 0 // count needed state
+        
+        buttons.resize(page)
+        content.resize(data[page - 1], page);
+    }
+
+    window.onresize = () => {
+        let itemSize = 400;
+        let num = Math.floor(window.innerWidth / itemSize);
+
+        let checkSize = num !== 0 && itemsPerPage !== num && num <= pages;
+
+        if (checkSize) {
+            resize(num);
+        }
     };
 }

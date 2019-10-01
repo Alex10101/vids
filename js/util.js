@@ -1,19 +1,3 @@
-function countPointsToSetColor(data, i) {
-    let page = 1;
-    let obj = {prev: {}};
-
-    data.forEach(item => {
-        i += item.length;
-        obj[i] = 1;
-        obj.prev[i - 1] = 1;
-        page++;
-    });
-
-    obj.i = i;
-    obj.page = page;
-    return obj;
-}
-
 let deferredData = [];
 
 function chunk(array, size) {
@@ -65,6 +49,7 @@ function chunk(array, size) {
 
     return chunks;
 }
+
 
 function createElement(elementName, className, propsObj) {
     let div = document.createElement(elementName);
@@ -196,6 +181,7 @@ function subscribeSliderConstructor(className = "active") {
     };
 }
 
+
 function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
     let activeSet = false;
 
@@ -259,7 +245,7 @@ function joinChunkFromEnd(arr, len) {
 // setInterval(() => changeSize(1), 2000)
 
 
-function animate() {
+function animate() {  //  moves slider forward and backward
     let prev = document.getElementById("indicators_prev");
     let next = document.getElementById("indicators_next");
     let stop = 4;

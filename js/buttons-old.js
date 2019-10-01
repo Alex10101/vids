@@ -1,6 +1,3 @@
-// Implemented reusage but stucked with unreadable code
-
-
 function countPointsToSetColor(data, i) {
     let page = 1;
     let obj = {prev: {}};
@@ -17,11 +14,10 @@ function countPointsToSetColor(data, i) {
     return obj;
 }
 
-
 function buttonsConstructor(data) {
     let indicators_prev = document.getElementById("indicators_prev");
     let indicatorsSlider = document.getElementById("indicators-sliders");
-    
+
     let colorSub = subscribeColorConstructor();
     let sliderSub = subscribeSliderConstructor();
 
@@ -42,6 +38,9 @@ function buttonsConstructor(data) {
                 this.subs.element = this.prevPageArr[this.thisPageActive];
 
                 this.sub(this.prevPageArr[this.thisPageActive], 'red')
+                // setTimeout(() => {
+                //     this.sub(this.prevPageArr[this.thisPageActive], "red");
+                // }, 50);
             }
         },
 
@@ -82,6 +81,25 @@ function buttonsConstructor(data) {
     }
 
 
+    function appendData(data) {
+        // Sets newly created sliderSub active    
+        appendSlider(indicatorsSlider, appendButton(data, false), data);
+    }
+
+    function prev(symbol) {
+        prevButton(symbol);
+
+        if (!colorSub.subs.prev()) {
+            colorSub.prevPageActive();
+            sliderSub.subs.prev();
+        }
+
+        if (colorSub.thisPageActive === 0 && !colorSub.hasPrev()) {
+            setPrevInactive();
+        }
+    }
+
+
     let prevActive = false;
     const setPrevActive = () => {
         indicators_prev.className = "indicators-button";
@@ -116,31 +134,23 @@ function buttonsConstructor(data) {
         if (!elementsToColorize() && !getNextSlide()) return false;
     }
 
-
-    function prev(symbol) {
-        prevButton(symbol);
-
-        if (!colorSub.subs.prev()) {
-            colorSub.prevPageActive();
-            sliderSub.subs.prev();
-        }
-
-        if (colorSub.thisPageActive === 0 && !colorSub.hasPrev()) {
-            setPrevInactive();
-        }
-    }
-    
-    
-    function resize(page, itemsPerPageArg) {
-        
-    }
-
-    
     appendSlider(indicatorsSlider, appendButton(data), data, sliderSub);
-    
+
     return {
         next,
         prev,
-        resize
-    }
+        sub(e) {
+            prevButton(e.target.textContent);
+            colorSub.sub(e.target, "red");
+        },
+        repaint(newData) {
+            appendData(newData);
+        },
+        disableLast() {
+            colorSub.disableLast();
+        },
+        resize() {
+            appendSlider(indicatorsSlider, appendButton(data), data, sliderSub);
+        }
+    };
 }
