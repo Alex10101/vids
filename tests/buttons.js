@@ -1,6 +1,5 @@
-
 function testNextButton() {
   setInterval(() => {
-    indicators_next.click()
-  }, 10)
+    indicators_next.click();
+  }, 10);
 }

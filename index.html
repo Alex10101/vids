@@ -1,0 +1,37 @@
+<link rel="stylesheet" href="css/main.css" />
+<link rel="stylesheet" href="css/animation.css" />
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/util.js"></script>
+<script src="js/content.js"></script>
+<script src="js/buttons.js"></script>
+
+<script defer src="js/autocomplete.js"></script>
+<script defer src="js/keyboard.js"></script>
+<script defer src="js/index.js"></script>
+
+<div class="app">
+  <div class="container">
+    <div class="autocomplete">
+      <input
+        autofocus
+        id="autocomplete_search"
+        type="text"
+        placeholder="Type Something..."
+      />
+    </div>
+
+    <div class="indicators-container">
+      <div class="prev-container">
+        <button class="indicators-button inactive" id="indicators_prev">
+          <
+        </button>
+      </div>
+      <div id="indicators-sliders"></div>
+      <button class="indicators-button" id="indicators_next">></button>
+    </div>
+
+    <div id="content"></div>
+  </div>
+</div>
