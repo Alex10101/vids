@@ -1,0 +1,196 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 200%;
+}
+
+.container > * {
+    margin: 60px auto;
+    display: flex;
+    justify-content: center;
+}
+
+.content {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+}
+
+.cotent > * {
+    margin: auto;
+}
+
+.vids-container {
+    min-width: 300px;
+    max-width: 300px;
+    height: 450px;
+    margin: 0 50px;
+    position: relative;
+    background: white;
+    border-radius: 5px;
+    transition: opacity 0.5s linear;
+}
+
+.vids-container * {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.vids-img {
+    height: 180px;
+    background: black;
+    background-clip: content-box;
+}
+
+.vids-link {
+    background: #116c4adb;
+    top: 50px;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+    position: absolute;
+    box-sizing: border-box;
+}
+
+.vids-link a {
+    color: white;
+}
+
+.vids-description {
+    overflow: hidden;
+    box-sizing: border-box;
+    font-style: italic;
+    font-size: 15px;
+}
+
+.brief-container {
+    padding-left: 30px;
+}
+
+.brief-container > * {
+    height: 40px;
+    margin: 5px 0;
+    line-height: 40px;
+}
+
+.befored:before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    margin: 0 5px;
+    display: block;
+    float: left;
+    background-repeat: no-repeat;
+    background-size: 25px 30px;
+    background-position: center;
+}
+
+.brief-title:before {
+    background-image: url(../img/male-solid.svg);
+}
+
+.brief-date:before {
+    background-image: url(../img/calendar-alt-regular.svg);
+}
+
+.brief-views:before {
+    background-image: url(../img/eye-solid.svg);
+}
+
+.indicators-button {
+    width: 30px;
+    height: 30px;
+    border: none;
+    margin: 10px 5px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.indicators-button:focus {
+    outline: 0;
+}
+
+#indicators_next {
+    box-shadow: -2px 0px 6px white;
+    border: none;
+}
+
+.config {
+    position: absolute;
+    left: 10px;
+    top: 140px;
+}
+
+.config > input {
+    width: 60px;
+}
+
+.app {
+    width: 100%;
+    height: 100%;
+    padding-top: 1%;
+    position: relative;
+    background: #343d46;
+    /*overflow: hidden;*/
+    font: 16px Arial;
+}
+
+input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+input[type=text] {
+    background-color: #f1f1f1;
+    width: 100%;
+    border-radius: 3px;
+}
+
+input[type=submit] {
+    background-color: DodgerBlue;
+    color: #fff;
+    cursor: pointer;
+}
+
+.autocomplete {
+    max-width: 700px;
+    width: 80%;
+    position: relative;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: opacity 0.3s;
+    opacity: 1;
+}
+
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+    background-color: #e9e9e9;
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+    

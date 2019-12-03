@@ -1,3 +1,19 @@
+function countPointsToSetColor(data, i) {
+  let page = 1;
+  let obj = { prev: {} };
+
+  data.forEach((item) => {
+    i += item.length;
+    obj[i] = 1;
+    obj.prev[i - 1] = 1;
+    page++;
+  });
+
+  obj.i = i;
+  obj.page = page;
+  return obj;
+}
+
 let deferredData = [];
 
 function chunk(array, size) {
@@ -54,7 +70,7 @@ function createElement(elementName, className, propsObj) {
   let div = document.createElement(elementName);
   className && (div.className = className);
   if (propsObj) {
-    Object.keys(propsObj).forEach(key => {
+    Object.keys(propsObj).forEach((key) => {
       div[key] = propsObj[key];
     });
   }
@@ -106,7 +122,7 @@ function subscribeColorConstructor() {
   function setClassAndNext(elem, className) {
     pubSub.once();
     let oldClass = elem.className;
-    elem.className += " " + className;
+    elem.className += ' ' + className;
     pubSub.sub(() => (elem.className = oldClass));
     subscribeElement.set(elem, className);
   }
@@ -120,7 +136,7 @@ function subscribeColorConstructor() {
   };
 }
 
-function subscribeSliderConstructor(className = "active") {
+function subscribeSliderConstructor(className = 'active') {
   let pubSub = {
     arr: [],
 
@@ -137,7 +153,7 @@ function subscribeSliderConstructor(className = "active") {
 
   let subscribeElement = {
     element: [],
-    classNameToSet: " " + className,
+    classNameToSet: ' ' + className,
 
     set(elem) {
       this.element.push(elem);
@@ -166,7 +182,7 @@ function subscribeSliderConstructor(className = "active") {
 
   function setClassAndNext(elem, className) {
     let oldClass = elem.className;
-    elem.className += " " + className;
+    elem.className += ' ' + className;
     pubSub.sub(() => (elem.className = oldClass));
     subscribeElement.set(elem, className);
   }
@@ -181,33 +197,19 @@ function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
   let activeSet = false;
 
   function appendToParent(num, local_index, local_arr) {
-    let slider = createElement("div", "slider");
+    let slider = createElement('div', 'slider');
     for (let i = 0; i < num; i++) {
       appendChilds(slider, i, local_arr);
     }
 
     if (!activeSet) {
-      setClassAndNext && setClassAndNext.sub(slider, "active");
+      setClassAndNext && setClassAndNext.sub(slider, 'active');
       activeSet = true;
     }
     parent.appendChild(slider);
   }
 
   local_data.forEach((arr, i) => appendToParent(arr.length, i, arr));
-}
-
-function fillDots(num) {
-  return joinChunkFromEnd(num.split(""), 3).join(".");
-}
-
-function joinChunkFromEnd(arr, len) {
-  let chunks = [];
-
-  while (arr.length !== 0) {
-    chunks.push(arr.splice(-len).join(""));
-  }
-
-  return chunks.reverse();
 }
 
 // [[1, 2, 3], [1, 2, 3]]
@@ -234,9 +236,8 @@ function joinChunkFromEnd(arr, len) {
 // setInterval(() => changeSize(1), 2000)
 
 function animate() {
-  //  moves slider forward and backward
-  let prev = document.getElementById("indicators_prev");
-  let next = document.getElementById("indicators_next");
+  let prev = document.getElementById('indicators_prev');
+  let next = document.getElementById('indicators_next');
   let stop = 4;
   let timer = 200;
 
