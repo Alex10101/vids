@@ -1,45 +1,47 @@
-let str2 =
-  '{"items":[{"id":"UelDrZ1aFeY","snippet":{"channelId":"UC4dqLAF7yT-_DqeYisQ001w","title":"The Beatles - Something","categoryId":"10"},"statistics":{"viewCount":"37753911","likeCount":"223196","dislikeCount":"5219","favoriteCount":"0","commentCount":"10199"}},{"id":"zVO5xTAbxm8","snippet":{"channelId":"UCweOkPb1wVVH0Q0Tlj4a5Pw","title":"[MV] GIRL\'S DAY(걸스데이) _ Something (Dance ver.)","categoryId":"10"},"statistics":{"viewCount":"20786101","likeCount":"232369","dislikeCount":"4721","favoriteCount":"0","commentCount":"4463"}},{"id":"MZ3Vh8jZFdE","snippet":{"channelId":"UC4dqLAF7yT-_DqeYisQ001w","title":"The Beatles - Something (2019 Mix / Audio)","categoryId":"10"},"statistics":{"viewCount":"236469","likeCount":"12009","dislikeCount":"79","favoriteCount":"0","commentCount":"1272"}},{"id":"QWbAaTDlBls","snippet":{"channelId":"UC4X6zEK1HpuCdfkiu0lJMLA","title":"Lasgo - Something","categoryId":"10"},"statistics":{"viewCount":"48175287","likeCount":"214167","dislikeCount":"7047","favoriteCount":"0","commentCount":"7459"}},{"id":"JO7qQ7peKeM","snippet":{"channelId":"UCweOkPb1wVVH0Q0Tlj4a5Pw","title":"[MV] GIRL\'S DAY(걸스데이) _ Something(썸씽)","categoryId":"10"},"statistics":{"viewCount":"17096518","likeCount":"147880","dislikeCount":"6191","favoriteCount":"0","commentCount":"4470"}}]}';
-let str3 = _getData();
-let data = [];
+import { chunk } from 'utils';
+import constants from './store';
 
-let nextPageToken = '';
+/* eslint no-use-before-define: 0 */
+const analyticsData = getAnalyticsData();
+const mainData = getMainData();
 
-async function getData(value) {
-  return JSON.parse(str2).items.map((item) => item.snippet.title);
+export async function getData() {
+  // value
+  return JSON.parse(analyticsData).items.map((item) => item.snippet.title);
 
+  // let nextPageToken = '';
   // let data = e.target.value;
   // console.log(data)
-  let apiKey = 'AIzaSyCpk4nP_0xD6dm0O-AmJPWYS7EDUiahobo';
-
-  let uri = `
-      https://www.googleapis.com/youtube/v3/search
-      ?key=${apiKey}
-      &type=video
-      &part=snippet 
-      &maxResults=${responseMaxResults}
-      &q=${data}}
-    `.replace(/[ \t\n]/g, '');
-
-  let arr = [];
-
-  await new Promise((res, rej) => {
-    fetch(uri)
-      .then((data) => data.json())
-      .then((data) => data.items.forEach((item) => arr.push(item.snippet.title)))
-      .then(res)
-      .catch(rej);
-  });
-
-  return arr;
+  // const apiKey = 'AIzaSyCpk4nP_0xD6dm0O-AmJPWYS7EDUiahobo';
+  //
+  // const uri = `
+  //     https://www.googleapis.com/youtube/v3/search
+  //     ?key=${apiKey}
+  //     &type=video
+  //     &part=snippet
+  //     &maxResults=${constants.responseMaxResults}
+  //     &q=${data}}
+  //   `.replace(/[ \t\n]/g, '');
+  //
+  // const arr = [];
+  //
+  // await new Promise((res, rej) => {
+  //   fetch(uri)
+  //     .then((data) => data.json())
+  //     .then((data) => data.items.forEach((item) => arr.push(item.snippet.title)))
+  //     .then(res)
+  //     .catch(rej);
+  // });
+  //
+  // return arr;
 }
 
-function nextData(itemsPerPage) {
-  data = [];
-  let arr = [];
+export function nextData(itemsPerPage) {
+  constants.data = [];
+  const arr = [];
 
-  let stats = JSON.parse(str2).items;
-  let videoData = str3.items;
+  const stats = JSON.parse(analyticsData).items;
+  const videoData = mainData.items;
 
   function addData() {
     for (let i = 0; i < videoData.length; i++) {
@@ -58,16 +60,16 @@ function nextData(itemsPerPage) {
     }
   }
 
-  for (let i = 0; i < pages; i++) {
+  for (let i = 0; i < constants.pages; i++) {
     addData();
   }
 
-  let res = chunk(arr, itemsPerPage);
+  const res = chunk(arr, itemsPerPage);
 
-  data = res.slice(0, pages);
+  constants.data = res.slice(0, constants.pages);
 }
 
-function _getData() {
+function getMainData() {
   return {
     kind: 'youtube#searchListResponse',
     etag: '"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/TuEk6tPnWkezfmiBGARBc69Td-c"',
@@ -249,4 +251,8 @@ function _getData() {
       }
     ]
   };
+}
+
+function getAnalyticsData() {
+  return '{"items":[{"id":"UelDrZ1aFeY","snippet":{"channelId":"UC4dqLAF7yT-_DqeYisQ001w","title":"The Beatles - Something","categoryId":"10"},"statistics":{"viewCount":"37753911","likeCount":"223196","dislikeCount":"5219","favoriteCount":"0","commentCount":"10199"}},{"id":"zVO5xTAbxm8","snippet":{"channelId":"UCweOkPb1wVVH0Q0Tlj4a5Pw","title":"[MV] GIRL\'S DAY(걸스데이) _ Something (Dance ver.)","categoryId":"10"},"statistics":{"viewCount":"20786101","likeCount":"232369","dislikeCount":"4721","favoriteCount":"0","commentCount":"4463"}},{"id":"MZ3Vh8jZFdE","snippet":{"channelId":"UC4dqLAF7yT-_DqeYisQ001w","title":"The Beatles - Something (2019 Mix / Audio)","categoryId":"10"},"statistics":{"viewCount":"236469","likeCount":"12009","dislikeCount":"79","favoriteCount":"0","commentCount":"1272"}},{"id":"QWbAaTDlBls","snippet":{"channelId":"UC4X6zEK1HpuCdfkiu0lJMLA","title":"Lasgo - Something","categoryId":"10"},"statistics":{"viewCount":"48175287","likeCount":"214167","dislikeCount":"7047","favoriteCount":"0","commentCount":"7459"}},{"id":"JO7qQ7peKeM","snippet":{"channelId":"UCweOkPb1wVVH0Q0Tlj4a5Pw","title":"[MV] GIRL\'S DAY(걸스데이) _ Something(썸씽)","categoryId":"10"},"statistics":{"viewCount":"17096518","likeCount":"147880","dislikeCount":"6191","favoriteCount":"0","commentCount":"4470"}}]}';
 }

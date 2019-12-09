@@ -1,6 +1,9 @@
-function countPointsToSetColor(data, i) {
+/* eslint prefer-template: 0 */
+
+export function countPointsToSetColor(data, iArg) {
+  const obj = { prev: {} };
   let page = 1;
-  let obj = { prev: {} };
+  let i = iArg;
 
   data.forEach((item) => {
     i += item.length;
@@ -16,7 +19,7 @@ function countPointsToSetColor(data, i) {
 
 let deferredData = [];
 
-function chunk(array, size) {
+export function chunk(array, size) {
   if (deferredData.length + array.length < size) {
     deferredData = [...deferredData, ...array];
     return false;
@@ -25,7 +28,7 @@ function chunk(array, size) {
   let chunks = [];
 
   if (deferredData.length > size) {
-    let deferredDump = [...deferredData];
+    const deferredDump = [...deferredData];
     deferredData = [];
     chunks = chunk(deferredDump, size);
   }
@@ -48,7 +51,7 @@ function chunk(array, size) {
     let page = false;
     let last = size;
     chunks.forEach((item, index) => {
-      let len = item.length;
+      const len = item.length;
       if (item.length !== last) {
         page = index;
       }
@@ -58,7 +61,7 @@ function chunk(array, size) {
     return page; // first page is 0
   };
 
-  let unequalChunk = findChunk();
+  const unequalChunk = findChunk();
   if (unequalChunk && unequalChunk > -1) {
     deferredData = chunks.pop();
   }
@@ -66,9 +69,9 @@ function chunk(array, size) {
   return chunks;
 }
 
-function createElement(elementName, className, propsObj) {
-  let div = document.createElement(elementName);
-  className && (div.className = className);
+export function createElement(elementName, className, propsObj) {
+  const div = document.createElement(elementName);
+  if (className) div.className = className;
   if (propsObj) {
     Object.keys(propsObj).forEach((key) => {
       div[key] = propsObj[key];
@@ -77,8 +80,8 @@ function createElement(elementName, className, propsObj) {
   return div;
 }
 
-function subscribeColorConstructor() {
-  let pubSub = {
+export function subscribeColorConstructor() {
+  const pubSub = {
     func: false,
 
     sub(func) {
@@ -93,7 +96,7 @@ function subscribeColorConstructor() {
     }
   };
 
-  let subscribeElement = {
+  const subscribeElement = {
     element: false,
     classNameToSet: null,
 
@@ -106,7 +109,7 @@ function subscribeColorConstructor() {
       if (!this.element || !this.element.nextSibling) {
         return false;
       }
-      setClassAndNext(this.element.nextSibling, this.classNameToSet);
+      this.setClassAndNext(this.element.nextSibling, this.classNameToSet);
       return true;
     },
 
@@ -114,21 +117,24 @@ function subscribeColorConstructor() {
       if (!this.element || !this.element.previousSibling) {
         return false;
       }
-      setClassAndNext(this.element.previousSibling, this.classNameToSet);
+      this.setClassAndNext(this.element.previousSibling, this.classNameToSet);
       return true;
+    },
+
+    setClassAndNext(elemArg, className) {
+      const elem = elemArg;
+      pubSub.once();
+      const oldClass = elem.className;
+      elem.className += ' ' + className;
+      pubSub.sub(() => {
+        elem.className = oldClass;
+      });
+      this.set(elem, className);
     }
   };
 
-  function setClassAndNext(elem, className) {
-    pubSub.once();
-    let oldClass = elem.className;
-    elem.className += ' ' + className;
-    pubSub.sub(() => (elem.className = oldClass));
-    subscribeElement.set(elem, className);
-  }
-
   return {
-    sub: setClassAndNext,
+    sub: subscribeElement.setClassAndNext.bind(subscribeElement),
     subs: subscribeElement,
     disableLast() {
       pubSub.once();
@@ -136,8 +142,8 @@ function subscribeColorConstructor() {
   };
 }
 
-function subscribeSliderConstructor(className = 'active') {
-  let pubSub = {
+export function subscribeSliderConstructor(className = 'active') {
+  const pubSub = {
     arr: [],
 
     sub(func) {
@@ -151,7 +157,7 @@ function subscribeSliderConstructor(className = 'active') {
     }
   };
 
-  let subscribeElement = {
+  const subscribeElement = {
     element: [],
     classNameToSet: ' ' + className,
 
@@ -160,16 +166,26 @@ function subscribeSliderConstructor(className = 'active') {
     },
 
     next() {
-      let i = this.element.length - 1;
+      const i = this.element.length - 1;
       if (!this.element.length || !this.element[i].nextSibling) {
         return false;
       }
-      setClassAndNext(this.element[i].nextSibling, this.classNameToSet);
+      this.setClassAndNext(this.element[i].nextSibling, this.classNameToSet);
       return true;
     },
 
+    setClassAndNext(elemArg, classNameArg) {
+      const elem = elemArg;
+      const oldClass = elem.className;
+      elem.className += ' ' + classNameArg;
+      pubSub.sub(() => {
+        elem.className = oldClass;
+      });
+      subscribeElement.set(elem, classNameArg);
+    },
+
     prev() {
-      let i = this.element.length - 1;
+      const i = this.element.length - 1;
       if (!this.element.length || !this.element[i].previousSibling) {
         return false;
       }
@@ -180,36 +196,29 @@ function subscribeSliderConstructor(className = 'active') {
     }
   };
 
-  function setClassAndNext(elem, className) {
-    let oldClass = elem.className;
-    elem.className += ' ' + className;
-    pubSub.sub(() => (elem.className = oldClass));
-    subscribeElement.set(elem, className);
-  }
-
   return {
-    sub: setClassAndNext,
+    sub: subscribeElement.setClassAndNext.bind(subscribeElement),
     subs: subscribeElement
   };
 }
 
-function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
+export function appendSlider(parent, appendChilds, localData, setClassAndNext) {
   let activeSet = false;
 
-  function appendToParent(num, local_index, local_arr) {
-    let slider = createElement('div', 'slider');
+  function appendToParent(num, localIndex, localArr) {
+    const slider = createElement('div', 'slider');
     for (let i = 0; i < num; i++) {
-      appendChilds(slider, i, local_arr);
+      appendChilds(slider, i, localArr);
     }
 
     if (!activeSet) {
-      setClassAndNext && setClassAndNext.sub(slider, 'active');
+      if (setClassAndNext) setClassAndNext.sub(slider, 'active');
       activeSet = true;
     }
     parent.appendChild(slider);
   }
 
-  local_data.forEach((arr, i) => appendToParent(arr.length, i, arr));
+  localData.forEach((arr, i) => appendToParent(arr.length, i, arr));
 }
 
 // [[1, 2, 3], [1, 2, 3]]
@@ -235,21 +244,22 @@ function appendSlider(parent, appendChilds, local_data, setClassAndNext) {
 // setInterval(() => changeSize(3), 3000)
 // setInterval(() => changeSize(1), 2000)
 
-function animate() {
-  let prev = document.getElementById('indicators_prev');
-  let next = document.getElementById('indicators_next');
-  let stop = 4;
-  let timer = 200;
+/* eslint-disable */
+export function animate() {
+  const prev = document.getElementById('indicators_prev');
+  const next = document.getElementById('indicators_next');
+  const stop = 4;
+  const timer = 200;
 
-  function add(i = 0) {
+  function add(globalInc = 0) {
     function func() {
-      clear(i);
+      clear(globalInc);
       next.click();
 
-      i++;
+      globalInc++;
     }
 
-    let int = setInterval(func, timer);
+    const int = setInterval(func, timer);
 
     function clear(i) {
       if (i === stop) {
@@ -259,14 +269,14 @@ function animate() {
     }
   }
 
-  function del(i = 0) {
+  function del(globalInc = 0) {
     function func() {
-      clear(i);
+      clear(globalInc);
       prev.click();
-      i++;
+      globalInc++;
     }
 
-    let int = setInterval(func, timer);
+    const int = setInterval(func, timer);
 
     function clear(i) {
       if (i === stop) {

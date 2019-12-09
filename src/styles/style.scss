@@ -1,0 +1,196 @@
+body {
+  margin: 0;
+  padding: 0;
+  //height: 150%;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(#808080, #000), url('/img/ice.jpg');
+  background-size: cover;
+  background-blend-mode: saturation;
+}
+
+.container > * {
+  margin: 60px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+
+  > * {
+    margin: auto;
+  }
+}
+
+.vids-container {
+  min-width: 300px;
+  max-width: 300px;
+  height: 450px;
+  margin: 0 50px;
+  position: relative;
+  background: #fff;
+  border-radius: 5px;
+  transition: opacity 0.5s linear;
+
+  > * {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+  }
+}
+
+.vids-img {
+  height: 180px;
+  background: #000;
+  background-clip: content-box;
+}
+
+.vids-link {
+  background: #116c4adb;
+  top: 50px;
+  width: 100%;
+  text-align: center;
+  padding: 5px;
+  position: absolute;
+  box-sizing: border-box;
+
+  a {
+    color: #fff;
+  }
+}
+
+.vids-description {
+  overflow: hidden;
+  box-sizing: border-box;
+  font-style: italic;
+  font-size: 15px;
+}
+
+.brief-container {
+  padding-left: 30px;
+
+  > * {
+    height: 40px;
+    margin: 5px 0;
+    line-height: 40px;
+  }
+}
+
+.befored::before {
+  content: '';
+  width: 40px;
+  height: 40px;
+  margin: 0 5px;
+  display: block;
+  float: left;
+  background-repeat: no-repeat;
+  background-size: 25px 30px;
+  background-position: center;
+}
+
+.brief-title::before {
+  background-image: url(/img/male-solid.svg);
+}
+
+.brief-date::before {
+  background-image: url(/img/calendar-alt-regular.svg);
+}
+
+.brief-views::before {
+  background-image: url(/img/eye-solid.svg);
+}
+
+.indicators-button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  margin: 10px 5px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+#indicators_next {
+  box-shadow: -2px 0 6px #fff;
+  border: none;
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+
+  & [type='text'] {
+    background-color: #f1f1f1;
+    width: 100%;
+    border-radius: 3px;
+  }
+
+  & [type='submit'] {
+    background-color: #1e90ff;
+    color: #fff;
+    cursor: pointer;
+  }
+}
+
+.config {
+  position: absolute;
+  left: 10px;
+  top: 140px;
+
+  > input {
+    width: 60px;
+  }
+}
+
+.autocomplete {
+  max-width: 700px;
+  width: 80%;
+  position: relative;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+
+  /* position the autocomplete items to be the same width as the container: */
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: opacity 0.3s;
+    opacity: 1;
+
+    & :hover {
+      background-color: #e9e9e9;
+    }
+  }
+}
+
+/* when navigating through the items using the arrow keys: */
+.autocomplete-active {
+  background-color: #1e90ff;
+  color: #fff;
+}

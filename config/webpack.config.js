@@ -36,10 +36,7 @@ const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
 // every SASS resource/customised bootstrap .scss should be listed in this array
-const sassResources = [
-  path.resolve(__dirname, '../src/styles/bootstrap/_customMixins.scss'),
-  path.resolve(__dirname, '../src/styles/bootstrap/_customVariables.scss')
-];
+const sassResources = [path.resolve(__dirname, '../src/styles/index.scss')];
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -278,8 +275,6 @@ module.exports = function(webpackEnv) {
         .map((ext) => `.${ext}`)
         .filter((ext) => !ext.includes('ts')),
       alias: {
-        // Support React Native Web
-        // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         config: path.resolve(__dirname, '../src/config'),
         components: path.resolve(__dirname, '../src/components'),
         pages: path.resolve(__dirname, '../src/pages'),
@@ -323,16 +318,11 @@ module.exports = function(webpackEnv) {
             // smaller than specified limit in bytes as data URLs to avoid requests.
             // A missing `test` is equivalent to a match.
             {
-              test: /\.(graphql|gql)$/,
-              exclude: /node_modules/,
-              loader: 'graphql-tag/loader'
-            },
-            {
               test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
               loader: require.resolve('url-loader'),
               options: {
                 limit: imageInlineSizeLimit,
-                name: 'static/media/[name].[hash:8].[ext]'
+                name: 'public/img/[name].[hash:8].[ext]'
               }
             },
             // Process application JS with Babel.
@@ -389,37 +379,6 @@ module.exports = function(webpackEnv) {
                 sourceMaps: false
               }
             },
-            // "postcss" loader applies autoprefixer to our CSS.
-            // "css" loader resolves paths in CSS and adds assets as dependencies.
-            // "style" loader turns CSS into JS modules that inject <style> tags.
-            // In production, we use MiniCSSExtractPlugin to extract that CSS
-            // to a file, but in development "style" loader enables hot editing
-            // of CSS.
-            // By default we support CSS Modules with the extension .module.css
-            {
-              test: cssRegex,
-              exclude: cssModuleRegex,
-              use: getStyleLoaders({
-                importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap
-              }),
-              // Don't consider CSS imports dead code even if the
-              // containing package claims to have no side effects.
-              // Remove this when webpack adds a warning or an error for this.
-              // See https://github.com/webpack/webpack/issues/6571
-              sideEffects: true
-            },
-            // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
-            // using the extension .module.css
-            {
-              test: cssModuleRegex,
-              use: getStyleLoaders({
-                importLoaders: 1,
-                sourceMap: isEnvProduction && shouldUseSourceMap,
-                modules: true,
-                getLocalIdent: getCSSModuleLocalIdent
-              })
-            },
             // Opt-in support for SASS (using .scss or .sass extensions).
             // By default we support SASS Modules with the
             // extensions .module.scss or .module.sass
@@ -429,7 +388,7 @@ module.exports = function(webpackEnv) {
               use: [
                 ...getStyleLoaders(
                   {
-                    importLoaders: 2,
+                    importLoaders: 3,
                     sourceMap: isEnvProduction && shouldUseSourceMap
                   },
                   'sass-loader'
@@ -437,7 +396,6 @@ module.exports = function(webpackEnv) {
                 {
                   loader: 'sass-resources-loader',
                   options: {
-                    // Provide path to the file with resources
                     resources: sassResources
                   }
                 }
@@ -447,29 +405,6 @@ module.exports = function(webpackEnv) {
               // Remove this when webpack adds a warning or an error for this.
               // See https://github.com/webpack/webpack/issues/6571
               sideEffects: true
-            },
-            // Adds support for CSS Modules, but using SASS
-            // using the extension .module.scss or .module.sass
-            {
-              test: sassModuleRegex,
-              use: [
-                ...getStyleLoaders(
-                  {
-                    importLoaders: 2,
-                    sourceMap: isEnvProduction && shouldUseSourceMap,
-                    modules: true,
-                    getLocalIdent: getCSSModuleLocalIdent
-                  },
-                  'sass-loader'
-                ),
-                {
-                  loader: 'sass-resources-loader',
-                  options: {
-                    // Provide path to the file with resources
-                    resources: sassResources
-                  }
-                }
-              ]
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.

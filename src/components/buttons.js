@@ -1,9 +1,17 @@
-function buttonsConstructor(data) {
-  let indicators_prev = document.getElementById('indicators_prev');
-  let indicatorsSlider = document.getElementById('indicators-slider');
+import {
+  appendSlider,
+  countPointsToSetColor,
+  createElement,
+  subscribeColorConstructor,
+  subscribeSliderConstructor
+} from 'utils';
 
+const indicatorsPrev = document.getElementById('indicators_prev');
+const indicatorsSlider = document.getElementById('indicators-slider');
+
+export default function buttonsConstructor(globalData) {
   let colorSub = subscribeColorConstructor();
-  let sliderSub = subscribeSliderConstructor();
+  const sliderSub = subscribeSliderConstructor();
 
   colorSub = {
     ...colorSub,
@@ -35,16 +43,17 @@ function buttonsConstructor(data) {
 
   // Executes colorSub with first created button
   let i = 1; // increment for appendButton
-  function appendButton(data, colorize = true) {
-    let points = countPointsToSetColor(data, i);
+  function appendButton(data, colorizeArg = true) {
+    const points = countPointsToSetColor(data, i);
     let pushedToDefaultPageState = false;
+    let colorize = colorizeArg;
 
     return function(parent) {
-      let config = {
+      const config = {
         textContent: i++
       };
 
-      let button = createElement('button', 'indicators-button', config);
+      const button = createElement('button', 'indicators-button', config);
 
       if (colorize) {
         colorSub.sub(button, 'red');
@@ -56,8 +65,8 @@ function buttonsConstructor(data) {
         pushedToDefaultPageState = true;
       }
 
-      points[i - 1] && colorSub.nextPageArr.push(button);
-      points.prev[i - 1] && colorSub.prevPageArr.push(button);
+      if (points[i - 1]) colorSub.nextPageArr.push(button);
+      if (points.prev[i - 1]) colorSub.prevPageArr.push(button);
 
       parent.appendChild(button);
     };
@@ -66,6 +75,22 @@ function buttonsConstructor(data) {
   function appendData(data) {
     // Sets newly created sliderSub active
     appendSlider(indicatorsSlider, appendButton(data, false), data);
+  }
+
+  let prevActive = false;
+  const setPrevActive = () => {
+    indicatorsPrev.className = 'indicators-button';
+    prevActive = true;
+  };
+
+  const setPrevInactive = () => {
+    indicatorsPrev.className += ' inactive';
+    prevActive = false;
+  };
+
+  function prevButton(symbol) {
+    if (!prevActive && symbol !== '1') setPrevActive();
+    if (symbol === '1') setPrevInactive();
   }
 
   function prev(symbol) {
@@ -81,22 +106,7 @@ function buttonsConstructor(data) {
     }
   }
 
-  let prevActive = false;
-  const setPrevActive = () => {
-    indicators_prev.className = 'indicators-button';
-    prevActive = true;
-  };
-
-  const setPrevInactive = () => {
-    indicators_prev.className += ' inactive';
-    prevActive = false;
-  };
-
-  function prevButton(symbol) {
-    !prevActive && symbol !== '1' && setPrevActive();
-    symbol === '1' && setPrevInactive();
-  }
-
+  // eslint-disable-next-line consistent-return
   function next(symbol) {
     prevButton(symbol);
 
@@ -114,7 +124,7 @@ function buttonsConstructor(data) {
     if (!elementsToColorize() && !getNextSlide()) return false;
   }
 
-  appendSlider(indicatorsSlider, appendButton(data), data, sliderSub);
+  appendSlider(indicatorsSlider, appendButton(globalData), globalData, sliderSub);
 
   return {
     next,
@@ -130,7 +140,7 @@ function buttonsConstructor(data) {
       colorSub.disableLast();
     },
     resize() {
-      appendSlider(indicatorsSlider, appendButton(data), data, sliderSub);
+      appendSlider(indicatorsSlider, appendButton(globalData), globalData, sliderSub);
     }
   };
 }

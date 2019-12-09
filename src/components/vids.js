@@ -1,14 +1,16 @@
-function vidsConstructor(arr) {
-  let vids = document.getElementById('content');
-  let sliderSub = subscribeColorConstructor();
+import { appendSlider, createElement, subscribeColorConstructor } from 'utils';
+
+export default function vidsConstructor(arr) {
+  const vids = document.getElementById('content');
+  const sliderSub = subscribeColorConstructor();
+  const slidersArr = [];
   let inc = 0;
-  let slidersArr = [];
 
-  function joinChunkFromEnd(arr, len) {
-    let chunks = [];
+  function joinChunkFromEnd(JCarr, len) {
+    const chunks = [];
 
-    while (arr.length !== 0) {
-      chunks.push(arr.splice(-len).join(''));
+    while (JCarr.length !== 0) {
+      chunks.push(JCarr.splice(-len).join(''));
     }
 
     return chunks.reverse();
@@ -18,16 +20,17 @@ function vidsConstructor(arr) {
     return joinChunkFromEnd(num.split(''), 3).join('.');
   }
 
-  function appendElement(parent, index, data) {
+  function appendElement(parent, index, dataArg) {
+    let data = dataArg;
     data = data[index];
-    index === 0 && slidersArr.push(parent);
+    if (index === 0) slidersArr.push(parent);
 
-    let container = createElement('div', 'vids-container');
-    let linkContainer = createElement('div', 'vids-link');
-    let briefContainer = createElement('div', 'brief-container');
+    const container = createElement('div', 'vids-container');
+    const linkContainer = createElement('div', 'vids-link');
+    const briefContainer = createElement('div', 'brief-container');
 
-    let img = createElement('img', 'vids-img', { src: data.image });
-    let link = createElement('a', false, {
+    const img = createElement('img', 'vids-img', { src: data.image });
+    const link = createElement('a', false, {
       href: `https://www.youtube.com/watch?v=${data.videoId}`,
       textContent: data.title
     });

@@ -6,9 +6,9 @@
     "jest": true,
     "es6": true
   },
-  "extends": ["airbnb", "prettier", "prettier/react"],
+  "extends": ["airbnb", "prettier"],
   "parser": "babel-eslint",
-  "plugins": ["react", "react-hooks", "import", "prettier"],
+  "plugins": ["import", "prettier"],
   "rules": {
     "prettier/prettier": "error",
     "import/prefer-default-export": "off",
@@ -33,6 +33,9 @@
         "SwitchCase": 1
       }
     ],
+    "consistent-return": "off",
+    "prefer-template": "off",
+    "no-plusplus": "off",
     "func-names": "off",
     "import/no-extraneous-dependencies": "off",
     "no-console": "warn",
@@ -40,10 +43,6 @@
     "no-invalid-regexp": "error",
     "array-callback-return": "error",
     "arrow-parens": "error",
-    "react/jsx-props-no-spreading": "off",
-    "react/jsx-fragments": [2, "element"],
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "error",
     "jsx-a11y/label-has-associated-control": [
       2,
       {
